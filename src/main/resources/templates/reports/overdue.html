@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quá hạn')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container">
+    <h1 class="h3 mb-3">Phiếu quá hạn chưa trả hết</h1>
+    <table class="table bg-white">
+        <thead><tr><th>Mã</th><th>Thành viên</th><th>Hạn trả</th><th>Phạt hiện tại</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${borrowings}">
+            <td th:text="${item.id}"></td>
+            <td th:text="${item.memberName}"></td>
+            <td th:text="${item.dueDate}"></td>
+            <td th:text="${#numbers.formatDecimal(item.totalFine, 1, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+            <td><a th:href="@{/borrowings/{id}/return(id=${item.id})}">Trả sách</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(borrowings)}"><td colspan="5">Không có phiếu quá hạn.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

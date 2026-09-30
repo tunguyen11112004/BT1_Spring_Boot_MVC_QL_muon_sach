@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Lượt mượn theo thành viên')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container col-lg-8">
+    <h1 class="h3 mb-3">Số lượt mượn theo thành viên</h1>
+    <table class="table bg-white">
+        <thead><tr><th>Thành viên</th><th>Email</th><th>Số phiếu</th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${rows}">
+            <td th:text="${item.fullName}"></td>
+            <td th:text="${item.email}"></td>
+            <td th:text="${item.borrowCount}"></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

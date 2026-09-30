@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Lỗi')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container">
+    <div class="alert alert-danger" th:text="${errorMessage}">Có lỗi</div>
+    <a th:href="@{/}">Về trang chủ</a>
+</main>
+</body>
+</html>

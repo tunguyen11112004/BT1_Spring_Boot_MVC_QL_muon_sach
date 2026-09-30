@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thể loại')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="d-flex justify-content-between mb-3">
+        <h1 class="h3">Thể loại</h1>
+        <a class="btn btn-primary" th:href="@{/categories/new}">Thêm thể loại</a>
+    </div>
+    <table class="table bg-white">
+        <thead><tr><th>Tên</th><th>Mô tả</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${categories.content}">
+            <td th:text="${item.name}">Tên</td>
+            <td th:text="${item.description}">Mô tả</td>
+            <td th:text="${item.active} ? 'Đang dùng' : 'Ngừng dùng'">Đang dùng</td>
+            <td class="text-end">
+                <a th:href="@{/categories/{id}/edit(id=${item.id})}">Sửa</a>
+                <form class="d-inline" th:if="${item.active}" th:action="@{/categories/{id}/delete(id=${item.id})}" method="post">
+                    <button class="btn btn-link text-danger p-0" type="submit">Ngừng dùng</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" th:if="${categories.hasPrevious()}"
+           th:href="@{/categories(page=${categories.number - 1},size=${categories.size})}">Trước</a>
+        <span th:text="'Trang ' + (${categories.number} + 1) + ' / ' + ${categories.totalPages == 0 ? 1 : categories.totalPages}"></span>
+        <a class="btn btn-outline-secondary btn-sm" th:if="${categories.hasNext()}"
+           th:href="@{/categories(page=${categories.number + 1},size=${categories.size})}">Sau</a>
+    </div>
+</main>
+</body>
+</html>

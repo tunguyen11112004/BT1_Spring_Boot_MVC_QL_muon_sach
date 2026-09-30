@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Phiếu mượn')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="d-flex justify-content-between mb-3">
+        <h1 class="h3">Phiếu mượn</h1>
+        <a class="btn btn-primary" th:href="@{/borrowings/new}">Tạo phiếu</a>
+    </div>
+    <table class="table bg-white">
+        <thead><tr><th>Mã</th><th>Thành viên</th><th>Ngày mượn</th><th>Hạn trả</th><th>Trạng thái</th><th>Phạt</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${borrowings.content}">
+            <td th:text="${item.id}"></td>
+            <td th:text="${item.memberName}"></td>
+            <td th:text="${item.borrowDate}"></td>
+            <td th:text="${item.dueDate}"></td>
+            <td>
+                <span th:text="${item.overdue} ? 'QUÁ HẠN' : ${item.status}"></span>
+            </td>
+            <td th:text="${#numbers.formatDecimal(item.totalFine, 1, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+            <td><a th:href="@{/borrowings/{id}/return(id=${item.id})}">Trả sách</a></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" th:if="${borrowings.hasPrevious()}"
+           th:href="@{/borrowings(page=${borrowings.number - 1},size=${borrowings.size})}">Trước</a>
+        <span th:text="'Trang ' + (${borrowings.number} + 1) + ' / ' + ${borrowings.totalPages == 0 ? 1 : borrowings.totalPages}"></span>
+        <a class="btn btn-outline-secondary btn-sm" th:if="${borrowings.hasNext()}"
+           th:href="@{/borrowings(page=${borrowings.number + 1},size=${borrowings.size})}">Sau</a>
+    </div>
+</main>
+</body>
+</html>

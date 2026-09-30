@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Trả sách')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="h3">Phiếu #<span th:text="${borrowing.id}"></span></h1>
+    <p>
+        <span th:text="${borrowing.memberName}"></span>
+        · Mượn <span th:text="${borrowing.borrowDate}"></span>
+        · Hạn <span th:text="${borrowing.dueDate}"></span>
+        · <span th:text="${borrowing.overdue} ? 'QUÁ HẠN' : ${borrowing.status}"></span>
+        · Phạt <span th:text="${#numbers.formatDecimal(borrowing.totalFine, 1, 'COMMA', 0, 'POINT')} + ' đ'"></span>
+    </p>
+    <table class="table bg-white">
+        <thead><tr><th>Sách</th><th>ISBN</th><th>Mượn</th><th>Đã trả</th><th>Còn</th><th>Phạt dòng</th></tr></thead>
+        <tbody>
+        <tr th:each="line : ${borrowing.lines}">
+            <td th:text="${line.bookTitle}"></td>
+            <td th:text="${line.isbn}"></td>
+            <td th:text="${line.quantity}"></td>
+            <td th:text="${line.returnedQuantity}"></td>
+            <td th:text="${line.remaining}"></td>
+            <td th:text="${#numbers.formatDecimal(line.fineAmount, 1, 'COMMA', 0, 'POINT')} + ' đ'"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row g-4" th:if="${borrowing.status != 'RETURNED'}">
+        <div class="col-md-7">
+            <form th:action="@{/borrowings/{id}/return(id=${borrowing.id})}" th:object="${returnForm}" method="post" class="card card-body">
+                <h2 class="h5">Trả một phần</h2>
+                <div class="mb-3">
+                    <label class="form-label">Dòng sách</label>
+                    <select class="form-select" th:field="*{detailId}">
+                        <option value="">Chọn sách còn nợ</option>
+                        <option th:each="line : ${borrowing.lines}" th:if="${line.remaining > 0}"
+                                th:value="${line.detailId}" th:text="${line.bookTitle + ' - còn ' + line.remaining}"></option>
+                    </select>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('detailId')}" th:errors="*{detailId}"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Số lượng trả</label>
+                    <input class="form-control" type="number" min="1" th:field="*{quantity}">
+                    <div class="text-danger small" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ngày trả</label>
+                    <input class="form-control" type="date" th:field="*{returnDate}">
+                </div>
+                <button class="btn btn-primary" type="submit">Trả số lượng này</button>
+            </form>
+        </div>
+        <div class="col-md-5">
+            <form th:action="@{/borrowings/{id}/return(id=${borrowing.id})}" method="post" class="card card-body">
+                <h2 class="h5">Trả toàn bộ phiếu</h2>
+                <input type="hidden" name="all" value="true">
+                <div class="mb-3">
+                    <label class="form-label">Ngày trả</label>
+                    <input class="form-control" type="date" name="returnDate" th:value="${#temporals.format(returnForm.returnDate, 'yyyy-MM-dd')}">
+                </div>
+                <p class="small text-secondary">Trả sau hạn bị phạt 5.000đ mỗi ngày cho mỗi cuốn.</p>
+                <button class="btn btn-warning" type="submit">Trả hết</button>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>

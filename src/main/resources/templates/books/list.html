@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sách')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <div class="d-flex justify-content-between mb-3">
+        <h1 class="h3">Sách</h1>
+        <a class="btn btn-primary" th:href="@{/books/new}">Thêm sách</a>
+    </div>
+    <form class="row g-2 mb-3" method="get" th:action="@{/books}">
+        <div class="col-md-4"><input class="form-control" name="keyword" placeholder="Tên, tác giả, ISBN, thể loại" th:value="${keyword}"></div>
+        <div class="col-md-3">
+            <select class="form-select" name="categoryId">
+                <option value="">Mọi thể loại</option>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}" th:selected="${category.id == categoryId}"></option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="sort">
+                <option value="id" th:selected="${sort == 'id'}">Mới nhất</option>
+                <option value="title" th:selected="${sort == 'title'}">Tên</option>
+                <option value="createdAt" th:selected="${sort == 'createdAt'}">Ngày tạo</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-outline-secondary" type="submit">Tìm</button></div>
+    </form>
+    <table class="table bg-white">
+        <thead><tr><th>ISBN</th><th>Tên</th><th>Tác giả</th><th>Thể loại</th><th>Còn / Tổng</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${books.content}">
+            <td th:text="${item.isbn}"></td>
+            <td th:text="${item.title}"></td>
+            <td th:text="${item.author}"></td>
+            <td th:text="${item.categoryName}"></td>
+            <td th:text="${item.availableQuantity} + ' / ' + ${item.totalQuantity}"></td>
+            <td th:text="${item.status}"></td>
+            <td class="text-end">
+                <a th:href="@{/books/{id}/edit(id=${item.id})}">Sửa</a>
+                <form class="d-inline" th:action="@{/books/{id}/delete(id=${item.id})}" method="post">
+                    <button class="btn btn-link text-danger p-0" type="submit">Xóa</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" th:if="${books.hasPrevious()}"
+           th:href="@{/books(page=${books.number - 1},size=${books.size},keyword=${keyword},categoryId=${categoryId},sort=${sort})}">Trước</a>
+        <span th:text="'Trang ' + (${books.number} + 1) + ' / ' + ${books.totalPages == 0 ? 1 : books.totalPages}"></span>
+        <a class="btn btn-outline-secondary btn-sm" th:if="${books.hasNext()}"
+           th:href="@{/books(page=${books.number + 1},size=${books.size},keyword=${keyword},categoryId=${categoryId},sort=${sort})}">Sau</a>
+    </div>
+</main>
+</body>
+</html>

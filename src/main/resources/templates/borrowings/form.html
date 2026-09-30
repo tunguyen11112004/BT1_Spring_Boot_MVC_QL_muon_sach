@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tạo phiếu mượn')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container col-lg-8">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="h3 mb-3">Tạo phiếu mượn</h1>
+    <p class="text-secondary">Hạn trả được tính bằng ngày mượn cộng 14 ngày. Dòng không chọn sách sẽ được bỏ qua.</p>
+    <form th:action="@{/borrowings}" th:object="${borrowingForm}" method="post" class="card card-body">
+        <div class="mb-3">
+            <label class="form-label">Thành viên</label>
+            <select class="form-select" th:field="*{memberId}">
+                <option value="">Chọn thành viên đang hoạt động</option>
+                <option th:each="member : ${members}" th:value="${member.id}" th:text="${member.fullName + ' - ' + member.email}"></option>
+            </select>
+            <div class="text-danger small" th:if="${#fields.hasErrors('memberId')}" th:errors="*{memberId}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Ngày mượn</label>
+            <input class="form-control" type="date" th:field="*{borrowDate}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('borrowDate')}" th:errors="*{borrowDate}"></div>
+        </div>
+        <div class="mb-3" th:each="line, stat : *{lines}">
+            <label class="form-label" th:text="'Sách ' + ${stat.count}"></label>
+            <div class="row g-2">
+                <div class="col-md-8">
+                    <select class="form-select" th:field="*{lines[__${stat.index}__].bookId}">
+                        <option value="">Không chọn</option>
+                        <option th:each="book : ${books}" th:value="${book.id}"
+                                th:text="${book.title + ' - còn ' + book.availableQuantity}"></option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input class="form-control" type="number" min="1" th:field="*{lines[__${stat.index}__].quantity}">
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Lưu phiếu</button>
+    </form>
+</main>
+</body>
+</html>

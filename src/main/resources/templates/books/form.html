@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sách')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container col-lg-7">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="h3 mb-3" th:text="${bookForm.id == null} ? 'Thêm sách' : 'Sửa sách'">Sách</h1>
+    <form th:action="@{/books}" th:object="${bookForm}" method="post" class="card card-body">
+        <input type="hidden" th:field="*{id}">
+        <div class="mb-3">
+            <label class="form-label">ISBN</label>
+            <input class="form-control" th:field="*{isbn}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tên sách</label>
+            <input class="form-control" th:field="*{title}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tác giả</label>
+            <input class="form-control" th:field="*{author}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Thể loại</label>
+            <select class="form-select" th:field="*{categoryId}">
+                <option value="">Chọn thể loại</option>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+            <div class="text-danger small" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Tổng số lượng</label>
+            <input class="form-control" type="number" min="0" th:field="*{totalQuantity}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('totalQuantity')}" th:errors="*{totalQuantity}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Trạng thái</label>
+            <select class="form-select" th:field="*{status}">
+                <option th:each="st : ${T(org.fp.bt_ql_muon_sach.entity.BookStatus).values()}"
+                        th:if="${st.name() != 'DELETED'}"
+                        th:value="${st}" th:text="${st}"></option>
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Lưu</button>
+    </form>
+</main>
+</body>
+</html>

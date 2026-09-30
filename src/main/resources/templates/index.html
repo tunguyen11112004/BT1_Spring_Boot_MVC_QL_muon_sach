@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thư viện')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: nav}"></div>
+<main class="container">
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <h1 class="mb-3">Quản lý mượn sách</h1>
+    <p class="text-secondary">Theo dõi sách, thành viên, phiếu mượn và tiền phạt trả muộn.</p>
+    <div class="row g-3">
+        <div class="col-md-3"><a class="btn btn-primary w-100" th:href="@{/books}">Danh sách sách</a></div>
+        <div class="col-md-3"><a class="btn btn-outline-primary w-100" th:href="@{/borrowings/new}">Tạo phiếu mượn</a></div>
+        <div class="col-md-3"><a class="btn btn-outline-primary w-100" th:href="@{/members}">Thành viên</a></div>
+        <div class="col-md-3"><a class="btn btn-outline-danger w-100" th:href="@{/reports/overdue}">Phiếu quá hạn</a></div>
+    </div>
+</main>
+</body>
+</html>

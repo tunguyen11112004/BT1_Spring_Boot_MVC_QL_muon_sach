@@ -1,0 +1,189 @@
+Bài tập Spring Boot cho Junior Developer
+Xây dựng ứng dụng Spring Boot MVC quản lý mượn sách dùng Thymeleaf và cơ sở dữ liệu
+Tài liệu này mô tả một bài tập Spring Boot hoàn chỉnh dành cho junior Java developer. Mục tiêu là yêu cầu học viên xây dựng một ứng dụng Spring Boot MVC có giao diện server side bằng Thymeleaf, phân tầng rõ ràng, kết nối database thật, xử lý nghiệp vụ bằng service và kiểm tra dữ liệu đầu vào trên form.
+Hạng mục
+Yêu cầu
+Mức độ
+Thời lượng
+Spring Boot MVC
+Spring Boot, Thymeleaf, JPA, Validation, Database
+Junior plus
+3 đến 5 ngày
+1 Mục tiêu học tập
+Thiết kế luồng màn hình MVC, controller route và form xử lý nghiệp vụ rõ ràng.
+Xây dựng mô hình dữ liệu có quan hệ một nhiều và nhiều nhiều thông qua bảng chi tiết.
+Áp dụng Spring Data JPA, transaction, validation và global exception handling.
+Tách lớp Controller, Service, Repository, DTO, Mapper theo đúng trách nhiệm.
+Biết viết migration dữ liệu, seed data, giao diện Thymeleaf và test cơ bản.
+2 Bối cảnh bài toán
+Một thư viện nội bộ cần hệ thống quản lý sách, thành viên và quy trình mượn trả. Mỗi thành viên có thể mượn nhiều sách trong một phiếu mượn. Hệ thống phải kiểm tra tồn kho, trạng thái thành viên, hạn trả và tiền phạt khi trả muộn.
+3 Công nghệ bắt buộc
+Nhóm
+Yêu cầu cụ thể
+Ngôn ngữ và framework
+Java 17 hoặc 21, Spring Boot 3.x
+Database
+PostgreSQL hoặc MySQL. Không dùng database in memory cho bản nộp chính.
+Persistence
+Spring Data JPA, Hibernate, transaction bằng @Transactional
+Validation
+jakarta.validation với @Valid và các annotation phù hợp
+Migration
+Flyway hoặc Liquibase
+Giao diện
+Thymeleaf, Bootstrap hoặc CSS thuần
+Test
+JUnit 5, Mockito, ít nhất unit test cho service chính
+4 Chức năng bắt buộc
+4.1 Quản lý thể loại sách
+Tạo, cập nhật, xóa mềm, xem danh sách thể loại.
+Tên thể loại không được trùng, không được rỗng.
+4.2 Quản lý sách
+Tạo sách với mã ISBN, tên sách, tác giả, thể loại, tổng số lượng và số lượng đang có.
+Tìm kiếm sách theo tên, tác giả, ISBN hoặc thể loại.
+Không cho xóa sách nếu sách đang có lượt mượn chưa trả.
+4.3 Quản lý thành viên
+Tạo, cập nhật, khóa hoặc mở khóa thành viên.
+Email thành viên phải hợp lệ và không trùng.
+Thành viên bị khóa không được tạo phiếu mượn mới.
+4.4 Mượn sách
+Một phiếu mượn có thể chứa nhiều cuốn sách.
+Không cho mượn nếu số lượng sách còn lại không đủ.
+Mặc định hạn trả là 14 ngày kể từ ngày mượn.
+Khi tạo phiếu mượn thành công, hệ thống phải trừ số lượng sách đang có.
+4.5 Trả sách
+Cho phép trả từng cuốn hoặc trả toàn bộ phiếu.
+Khi trả sách, hệ thống cộng lại số lượng sách đang có.
+Nếu trả sau hạn, tính tiền phạt 5.000 VND mỗi ngày cho mỗi cuốn.
+Khi tất cả sách trong phiếu đã trả, trạng thái phiếu chuyển thành RETURNED.
+4.6 Báo cáo đơn giản
+Danh sách phiếu mượn quá hạn.
+Top 5 sách được mượn nhiều nhất.
+Số lượt mượn theo thành viên.
+5 Mô hình dữ liệu đề xuất
+Entity
+Trường chính
+Ghi chú quan hệ
+Category
+id, name, description, active
+Một thể loại có nhiều sách.
+Book
+id, isbn, title, author, totalQuantity, availableQuantity, status
+Nhiều sách thuộc một thể loại.
+Member
+id, fullName, email, phone, status, createdAt
+Một thành viên có nhiều phiếu mượn.
+Borrowing
+id, memberId, borrowDate, dueDate, returnedDate, status, totalFine
+Một phiếu có nhiều dòng chi tiết.
+BorrowingDetail
+id, borrowingId, bookId, quantity, returnedQuantity, fineAmount
+Lưu số lượng mượn và số lượng đã trả.
+6 Màn hình và route tối thiểu cần có
+Màn hình
+Route
+Controller action
+Ghi chú
+Danh sách sách
+/books
+GET /books
+Có phân trang và tìm kiếm
+Form tạo sách
+/books/new
+GET /books/new
+Hiển thị form nhập sách
+Lưu sách
+/books
+POST /books
+Validate ISBN và số lượng
+Form sửa sách
+/books/{id}/edit
+GET /books/{id}/edit
+Nạp dữ liệu lên form
+Danh sách thành viên
+/members
+GET /members
+Có lọc theo trạng thái
+Form thành viên
+/members/new
+GET /members/new
+Email không trùng
+Tạo phiếu mượn
+/borrowings/new
+GET /borrowings/new
+Chọn thành viên và nhiều sách
+Lưu phiếu mượn
+/borrowings
+POST /borrowings
+Dùng transaction
+Trả sách
+/borrowings/{id}/return
+GET/POST
+Hỗ trợ trả từng phần
+Báo cáo quá hạn
+/reports/overdue
+GET /reports/overdue
+Chỉ lấy phiếu chưa trả hết
+7 Quy tắc nghiệp vụ bắt buộc
+Toàn bộ thao tác tạo phiếu mượn và trả sách phải chạy trong transaction.
+Không được để availableQuantity nhỏ hơn 0 hoặc lớn hơn totalQuantity.
+Không cho mượn sách có trạng thái INACTIVE hoặc DELETED.
+Không cho thành viên đang BLOCKED mượn sách.
+Lỗi validate trên form phải hiển thị rõ tại màn hình; lỗi nghiệp vụ phải có thông báo dễ hiểu cho người dùng.
+Các màn hình danh sách phải hỗ trợ phân trang bằng page, size và sắp xếp tối thiểu theo createdAt hoặc id.
+8 Yêu cầu cấu trúc project
+Học viên cần tổ chức project theo phân tầng rõ ràng. Tên package có thể thay đổi, nhưng phải thể hiện trách nhiệm của từng lớp.
+controller: nhận request, trả response, không chứa nghiệp vụ phức tạp.
+service: xử lý nghiệp vụ, transaction và gọi repository.
+repository: kế thừa JpaRepository, chỉ chứa truy vấn dữ liệu.
+dto hoặc form model: nhận dữ liệu từ form, validate dữ liệu đầu vào, không đưa toàn bộ entity phức tạp trực tiếp vào view khi không cần.
+entity: ánh xạ database bằng JPA annotation.
+exception: custom exception và global exception handler.
+templates: chứa file .html Thymeleaf theo từng module như books, members, borrowings, reports.
+static: chứa CSS, JavaScript và tài nguyên tĩnh nếu có.
+mapper: chuyển đổi entity sang DTO, có thể viết tay hoặc dùng MapStruct.
+9 Dữ liệu khởi tạo
+Ít nhất 5 thể loại sách.
+Ít nhất 20 cuốn sách thuộc nhiều thể loại.
+Ít nhất 10 thành viên với trạng thái khác nhau.
+Ít nhất 5 phiếu mượn mẫu, trong đó có phiếu quá hạn và phiếu đã trả.
+10 Bài nộp
+Source code đầy đủ trên Git hoặc file nén project.
+File README mô tả cách chạy project, cấu hình database và ví dụ request.
+Migration script hoặc hướng dẫn tạo schema rõ ràng.
+Giao diện Thymeleaf chạy được khi start ứng dụng.
+Có ảnh chụp màn hình các luồng chính là điểm cộng.
+11 Tiêu chí chấm điểm
+Tiêu chí
+Trọng số
+Kỳ vọng
+Thiết kế database
+20%
+Quan hệ đúng, constraint hợp lý, migration chạy được.
+MVC và phân tầng
+20%
+Controller mỏng, service rõ nghiệp vụ, form và view rõ ràng.
+Nghiệp vụ mượn trả
+25%
+Xử lý đúng tồn kho, transaction, quá hạn và trả từng phần.
+Validation và lỗi
+15%
+Validate đầu vào đầy đủ, lỗi trả về thống nhất.
+Test và tài liệu
+15%
+Có unit test quan trọng, README và Swagger rõ.
+Code quality
+5%
+Code dễ đọc, đặt tên tốt, không copy paste quá mức.
+12 Yêu cầu nâng cao tùy chọn
+Thêm Spring Security với JWT cho vai trò ADMIN và LIBRARIAN.
+Thêm optimistic locking để tránh mượn vượt tồn kho khi nhiều request đồng thời.
+Thêm scheduled job tự động đánh dấu phiếu quá hạn.
+Thêm Docker Compose gồm ứng dụng và database.
+Thêm integration test dùng Testcontainers.
+13 Câu hỏi review sau khi nộp
+Vì sao thao tác mượn sách cần @Transactional?
+Khi nào nên dùng DTO hoặc form model thay vì đưa entity trực tiếp ra view?
+Nếu hai người cùng mượn cuốn cuối cùng cùng lúc thì hệ thống hiện tại xử lý thế nào?
+Sự khác nhau giữa lazy loading và eager loading trong bài này là gì?
+Bạn sẽ tối ưu API báo cáo như thế nào khi dữ liệu lớn?
